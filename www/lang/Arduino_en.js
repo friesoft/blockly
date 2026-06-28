@@ -373,6 +373,7 @@ Blockly.Msg.OTTO9_CALIBRATION_FOOT='foot ';
 Blockly.Msg.OTTO_WHEELS_TEXT = "wheels";
 Blockly.Msg.OTTO_NINJA_TEXT = "ninja";
 Blockly.Msg.OTTO_BIPED_TEXT = "biped";
+Blockly.Msg.OTTO9_SMOOTH_TEXT = "Dance smooth criminal";
 Blockly.Msg.OTTO_HEAD_TEXT = "head ";
 Blockly.Msg.OTTO_FRONT_TEXT = "front ";
 Blockly.Msg.OTTO_BACK_TEXT = "back ";
@@ -491,6 +492,9 @@ Blockly.Msg.lp2i_mp3_next = "⏭️ play next MP3 ";
 Blockly.Msg.lp2i_mp3_next_tooltip = "⏭️ reads the following track song file";
 // servomotor
 Blockly.Msg.ARDUINO_SERVO_MOVE_INPUT1 = "rotate";
+Blockly.Msg.ARDUINO_SERVO_ATTACH_TEXT = "attach servo";
+Blockly.Msg.ARDUINO_SERVO_DETACH_TEXT = "detach servo";
+Blockly.Msg.ARDUINO_SERVO_ATTACHED_TEXT = "attached?";
 Blockly.Msg.ARDUINO_SERVO_MOVE_DEGREE = "angle [0°-180°]";
 Blockly.Msg.ARDUINO_SERVO_MOVE_TOOLTIP = "possible rotation between 0 and 180 degrees";
 Blockly.Msg.ARDUINO_SERVO_ROT_CONTINUE_TEXT = "spin";

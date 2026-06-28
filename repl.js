@@ -1,6 +1,3 @@
-var { ipcRenderer } = require("electron")
-var remote = require('electron').remote 
-
 window.addEventListener('load', function load(event) {
 	document.getElementById('btn_envoi').onclick = function(event) {
 		var entree = document.getElementById('schbox').value
@@ -11,7 +8,6 @@ window.addEventListener('load', function load(event) {
 		moniteur.animate({scrollTop: moniteur.scrollHeight})
 	}
 	document.getElementById('btn_quit').onclick = function(event) {
-		var window = remote.getCurrentWindow() 
-		window.close()
+		window.ottoAPI.windowAction('close')
 	}
 })

@@ -1,0 +1,53 @@
+name: Build Fedora RPM
+
+on:
+  push:
+    branches:
+      - '**' # Run on all branches
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 24
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Append Git Commit to Version
+        run: |
+          COMMIT_HASH=$(git rev-parse --short HEAD)
+          echo "COMMIT_HASH=$COMMIT_HASH" >> $GITHUB_ENV
+          # Update package.json version to include the commit hash for the RPM build
+          node -e "
+            const fs = require('fs');
+            const pkg = JSON.parse(fs.readFileSync('package.json'));
+            // Remove any existing prerelease tag and append the commit hash
+            const baseVersion = pkg.version.split('-')[0];
+            pkg.version = \`\${baseVersion}-git.\${process.env.COMMIT_HASH}\`;
+            fs.writeFileSync('package.json', JSON.stringify(pkg, null, 2));
+          "
+        
+      - name: Setup arduino-cli and download cores
+        run: npm run setup-cli
+
+      - name: Build RPM Package
+        run: npx electron-builder --linux rpm
+
+      - name: Upload RPM Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: ottoblockly-fedora-rpm
+          path: dist/*.rpm

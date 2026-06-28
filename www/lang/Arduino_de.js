@@ -80,6 +80,11 @@ Blockly.Msg.CAT_AUDIO = "🎶 Audio";
 Blockly.Msg.CAT_CAMERAS = "📷 Kameras";
 Blockly.Msg.CAT_MUVISION = "👁️ MuVision";
 Blockly.Msg.CAT_OTTO_DIY = "🪛 Otto DIY";
+Blockly.Msg.CAT_OTTO_LEGS = "🦿 Beine";
+Blockly.Msg.CAT_OTTO_ARMS = "🦾 Arme";
+Blockly.Msg.CAT_OTTO_WHEELS = "💿 Räder";
+Blockly.Msg.CAT_OTTO_NINJA = "🐱‍👤 Ninja";
+Blockly.Msg.CAT_OTTO_QUAD = "🕷️ Quad";
 Blockly.Msg.CAT_SENSORS = "🎛 Sensoren";
 Blockly.Msg.CAT_SSENSORS = "🔍 Einfache Sensoren";
 Blockly.Msg.CAT_LED = "🚨 LED";
@@ -629,6 +634,9 @@ Blockly.Msg.lp2i_mp3_next = "lese die nächste mp3 Datei";
 Blockly.Msg.lp2i_mp3_next_tooltip = "spielt das nächste Lied";
 //servomotor
 Blockly.Msg.ARDUINO_SERVO_MOVE_INPUT1 = "rotiere";
+Blockly.Msg.ARDUINO_SERVO_ATTACH_TEXT = "Servo verbinden";
+Blockly.Msg.ARDUINO_SERVO_DETACH_TEXT = "Servo trennen";
+Blockly.Msg.ARDUINO_SERVO_ATTACHED_TEXT = "verbunden?";
 Blockly.Msg.ARDUINO_SERVO_MOVE_DEGREE = "Grad [0°-180°]";
 Blockly.Msg.ARDUINO_SERVO_MOVE_TOOLTIP =
   "mögliche Rotation zwischen 0° und 180°";
@@ -915,6 +923,11 @@ Blockly.Msg.OTTO9_RR = "rechter Fuß";
 Blockly.Msg.OTTO9_BUZZER = "Summer";
 Blockly.Msg.OTTO_HOME_TOOLTIP = "Otto geht sofort in Ausgangsposition.";
 Blockly.Msg.OTTO_HOME_TEXT = "Konfiguration";
+Blockly.Msg.OTTO_BIPED_TEXT = " Biped";
+Blockly.Msg.OTTO9_SMOOTH_TEXT = "Tanze Smooth Criminal";
+Blockly.Msg.OTTO_WHEELS_TEXT = " Räder";
+Blockly.Msg.OTTO_NINJA_TEXT = " Ninja";
+Blockly.Msg.OTTO9_ARMS_TEXT = " Arme ";
 
 ///ESCORNABOT Robot /// ONLY TRANSLATE THE LEFT PART INSIDE ["THIS YES" ,NOT]
 Blockly.Msg.ESCORNABOT_MODE_TEXT = "Initialisiere Escornabot";

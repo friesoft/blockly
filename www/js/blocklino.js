@@ -410,7 +410,7 @@ BlocklyDuino.bindFunctions = function() {
 	$('#select_all').on("click", BlocklyDuino.checkAll);
 	$('#btn_valid_config').on("click", BlocklyDuino.changeToolbox);
 	$('#btn_example').on("click", BlocklyDuino.buildExamples);
-	if(typeof process === 'undefined') {
+	if(!window.ottoAPI) {
 		$('#btn_factory').on("click", function() {
 			window.open("factory.html","_blank", null);
 		});

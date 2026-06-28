@@ -303,7 +303,7 @@ return "servo_" + value_pin + ".writeMicroseconds(" + value_degree + ");\n"
 };
 Blockly.Blocks["servo_attach"]={init:function(){
 	var card=window.localStorage.card;
-    this.appendDummyInput().appendField(new Blockly.FieldImage('media/servo.png', 22, 22, "*")).appendField("attach servo");
+    this.appendDummyInput().appendField(new Blockly.FieldImage('media/servo.png', 22, 22, "*")).appendField(Blockly.Msg.ARDUINO_SERVO_ATTACH_TEXT);
     //this.appendValueInput("PIN", "Number").setCheck("Number").setAlign(Blockly.ALIGN_RIGHT).appendField(Blockly.Msg.pin);
 	this.appendDummyInput().appendField(Blockly.Msg.pin).setAlign(Blockly.ALIGN_RIGHT)
         .appendField(new Blockly.FieldDropdown(profile[card].dropdownAllPins), "PIN");
@@ -325,7 +325,7 @@ return "servo_" + value_pin + ".attach(" + value_pin + ");\n"
 
 Blockly.Blocks["servo_detach"]={init:function(){
 	var card=window.localStorage.card;
-    this.appendDummyInput().appendField(new Blockly.FieldImage('media/servo.png', 22, 22, "*")).appendField("detach servo");
+    this.appendDummyInput().appendField(new Blockly.FieldImage('media/servo.png', 22, 22, "*")).appendField(Blockly.Msg.ARDUINO_SERVO_DETACH_TEXT);
     //this.appendValueInput("PIN", "Number").setCheck("Number").setAlign(Blockly.ALIGN_RIGHT).appendField(Blockly.Msg.pin);
 	this.appendDummyInput().appendField(Blockly.Msg.pin).setAlign(Blockly.ALIGN_RIGHT)
         .appendField(new Blockly.FieldDropdown(profile[card].dropdownAllPins), "PIN");
@@ -372,7 +372,7 @@ Blockly.Arduino["servo_read_degrees"]=function(block){
   Blockly.Blocks["servo_attached"]= {
     init: function() {
 	  var card=window.localStorage.card;
-      this.appendDummyInput() .appendField(new Blockly.FieldImage('media/servo.png', 22, 22, "*")) .appendField("attached?") ;
+      this.appendDummyInput() .appendField(new Blockly.FieldImage('media/servo.png', 22, 22, "*")) .appendField(Blockly.Msg.ARDUINO_SERVO_ATTACHED_TEXT) ;
       //this.appendValueInput("PIN", "Number").setAlign(Blockly.ALIGN_RIGHT).appendField(Blockly.Msg.pin);
 	  this.appendDummyInput().appendField(Blockly.Msg.pin).setAlign(Blockly.ALIGN_RIGHT)
         .appendField(new Blockly.FieldDropdown(profile[card].dropdownAllPins), "PIN");

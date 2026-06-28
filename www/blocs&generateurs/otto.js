@@ -1130,7 +1130,7 @@ Blockly.Arduino.definitions_['otto9_legs'] = '#define N_SERVOS 4\n'
 };
 
 Blockly.Blocks['otto9_smooth'] = {init: function() {
-    this.appendDummyInput("") .appendField(new Blockly.FieldImage('media/smooth.png', 33, 33, "*"))   .appendField('Dance smooth criminal');
+    this.appendDummyInput("") .appendField(new Blockly.FieldImage('media/smooth.png', 33, 33, "*"))   .appendField(Blockly.Msg.OTTO9_SMOOTH_TEXT);
     this.setInputsInline(false);
     this.setPreviousStatement(true);
     this.setNextStatement(true);

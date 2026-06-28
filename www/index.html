@@ -356,13 +356,8 @@
 	editor.session.setTabSize(2);
 	editor.setShowPrintMargin(false);
 	
-	// TRY-CATCH ADDED to prevent browser crash (Browsers don't support 'require')
-	try {
-		require('../resources/app/index.js');
-		require('../resources/app/factory.js');
-	} catch (e) {
-		console.log("Running in Browser Mode (require not available)");
-	}
 </script>
+<script type="text/javascript" src="../index.js"></script>
+<script type="text/javascript" src="../factory.js"></script>
 </html>
 

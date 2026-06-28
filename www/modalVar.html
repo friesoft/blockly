@@ -25,22 +25,21 @@
 	</div>
 
 <script>
-	var { ipcRenderer } = require("electron") ;
 	var input = document.getElementById("var_name") ;
 	input.addEventListener("keyup", function(event) {
 		if (event.keyCode === 13) document.getElementById("btn_variable").click()
 	})
 	function cancel() {
-		ipcRenderer.send("closeDialog", "") ;
-		this.close()
+		window.ottoAPI.send("closeDialog", "") ;
+		window.close()
 	}
 	function response() {
-		ipcRenderer.send("closeDialog", document.getElementById("var_name").value) ;
-		this.close()
+		window.ottoAPI.send("closeDialog", document.getElementById("var_name").value) ;
+		window.close()
 	}
 	window.onload=function() {
 		document.getElementById("var_name").focus() ;
-		var options = ipcRenderer.sendSync("openDialog", "") ;
+		var options = window.ottoAPI.sendSync("openDialog", "") ;
 		var params = JSON.parse(options) ;
 		document.getElementById("title").innerHTML = params.label ;
 		document.getElementById("var_name").value = params.value ;

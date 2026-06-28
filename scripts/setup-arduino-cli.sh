@@ -30,16 +30,16 @@ tar -xzf "$TARBALL" arduino-cli
 rm "$TARBALL"
 
 echo "Updating arduino-cli core index..."
-./arduino-cli core update-index
+./arduino-cli --config-file arduino-cli.yaml core update-index
 
 echo "Installing required Arduino cores..."
-./arduino-cli core install arduino:avr@1.8.3
-./arduino-cli core install arduino:samd@1.8.9
-./arduino-cli core install arduino:megaavr@1.8.6
-./arduino-cli core install esp8266:esp8266@2.7.4
-./arduino-cli core install esp32:esp32@1.0.4
+./arduino-cli --config-file arduino-cli.yaml core install arduino:avr@1.8.3
+./arduino-cli --config-file arduino-cli.yaml core install arduino:samd@1.8.9
+./arduino-cli --config-file arduino-cli.yaml core install arduino:megaavr@1.8.6
+./arduino-cli --config-file arduino-cli.yaml core install esp8266:esp8266@2.7.4
+./arduino-cli --config-file arduino-cli.yaml core install esp32:esp32@1.0.4
 
 echo "Re-updating index..."
-./arduino-cli core update-index
+./arduino-cli --config-file arduino-cli.yaml core update-index
 
 echo "arduino-cli setup complete!"

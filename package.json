@@ -91,7 +91,7 @@
     "deb",
     "rpm"
    ],
-   "icon": "build/app.ico"
+   "icon": "www/media/icon.png"
   },
   "fileAssociations": {
    "ext": "bloc",

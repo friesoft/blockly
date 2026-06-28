@@ -29,14 +29,13 @@ jobs:
       - name: Append Git Commit to Version
         run: |
           COMMIT_HASH=$(git rev-parse --short HEAD)
-          echo "COMMIT_HASH=$COMMIT_HASH" >> $GITHUB_ENV
           # Update package.json version to include the commit hash for the RPM build
           node -e "
             const fs = require('fs');
             const pkg = JSON.parse(fs.readFileSync('package.json'));
             // Remove any existing prerelease tag and append the commit hash
             const baseVersion = pkg.version.split('-')[0];
-            pkg.version = \`\${baseVersion}-git.\${process.env.COMMIT_HASH}\`;
+            pkg.version = \`\${baseVersion}-git.${COMMIT_HASH}\`;
             fs.writeFileSync('package.json', JSON.stringify(pkg, null, 2));
           "
         

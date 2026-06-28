@@ -2,7 +2,7 @@
  "name": "ottoblockly",
  "version": "1.5.0",
  "description": "Blockly and Arduino coding standalone software for Otto DIY robots",
- "author": "Otto DIY and Builder community",
+ "author": "Otto DIY and Builder community <friesoft@gmail.com>",
  "license": "GPL-2.0",
  "main": "electronApp.js",
  "keywords": [

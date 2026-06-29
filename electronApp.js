@@ -4,6 +4,22 @@ const fs = require('fs');
 const { SerialPort } = require('serialport');
 var { autoUpdater } = require("electron-updater")
 var path = require('path')
+const os = require('os');
+
+const baseDir = path.join(os.homedir(), '.ottoblockly');
+process.env.ARDUINO_DIRECTORIES_DATA = path.join(baseDir, 'data');
+process.env.ARDUINO_DIRECTORIES_DOWNLOADS = path.join(baseDir, 'staging');
+process.env.ARDUINO_DIRECTORIES_USER = path.join(baseDir, 'userlibs');
+
+ipcMain.handle('app:getArduinoBaseDir', () => baseDir);
+ipcMain.handle('app:getArduinoDataPath', () => process.env.ARDUINO_DIRECTORIES_DATA);
+ipcMain.handle('app:openPath', async (event, dirPath) => {
+    if (!fs.existsSync(dirPath)) fs.mkdirSync(dirPath, {recursive: true});
+    const { shell } = require('electron');
+    await shell.openPath(dirPath);
+    return true;
+});
+
 var mainWindow
 var termWindow
 var factoryWindow
@@ -229,6 +245,15 @@ ipcMain.handle('fs:readFile', async (event, filePath) => {
     return fs.readFileSync(filePath, 'utf8');
 });
 
+ipcMain.handle('fs:exists', async (event, filePath) => {
+    return fs.existsSync(filePath);
+});
+
+ipcMain.handle('fs:mkdir', async (event, dirPath) => {
+    if (!fs.existsSync(dirPath)) fs.mkdirSync(dirPath, {recursive: true});
+    return true;
+});
+
 ipcMain.handle('fs:writeFile', async (event, filePath, data) => {
     fs.writeFileSync(filePath, data);
     return true;
@@ -248,6 +273,27 @@ ipcMain.handle('cp:exec', async (event, cmd, cwdOptions) => {
                 resolve({ stdout, stderr });
             }
         });
+    });
+});
+
+ipcMain.on('cp:spawn', (event, id, cmd, args, cwdOptions) => {
+    const { spawn } = require('child_process');
+    const child = spawn(cmd, args, cwdOptions);
+    
+    child.stdout.on('data', (data) => {
+        event.sender.send(`cp:spawn:stdout:${id}`, data.toString());
+    });
+    
+    child.stderr.on('data', (data) => {
+        event.sender.send(`cp:spawn:stderr:${id}`, data.toString());
+    });
+    
+    child.on('exit', (code) => {
+        event.sender.send(`cp:spawn:close:${id}`, code);
+    });
+    
+    child.on('error', (err) => {
+        event.sender.send(`cp:spawn:error:${id}`, err.message);
     });
 });
 

@@ -32,7 +32,6 @@
  ],
  "scripts": {
   "postinstall": "electron-builder install-app-deps",
-  "setup-cli": "bash scripts/setup-arduino-cli.sh",
   "start": "electron .",
   "compiler": "electron-builder --win --ia32",
   "compiler:mac": "electron-builder --mac",
@@ -116,7 +115,7 @@
     "provider": "github",
     "repo": "blockly",
     "owner": "friesoft",
-    "releaseType": "release"
+    "releaseType": "draft"
    }
   ]
  },

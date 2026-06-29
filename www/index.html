@@ -153,6 +153,20 @@
 					<option value="mega" >♾ Mega</option>
 					<option value="mkrwifi1010" >♾ MKR WiFi</option>
 						</select>
+			<div class="btn-group electron-only" style="margin-right: 5px; display: inline-block;">
+				<button type="button" id="btn_core_status" class="btn btn-arduino dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="height: 42px;" title="Checking core status...">
+					<span id="icon_core_status" class="fa fa-spinner fa-spin"></span>
+					<span class="caret"></span>
+				</button>
+				<ul class="dropdown-menu">
+					<li><a href="#" id="menu_core_download"><span class="fa fa-download"></span> Install Missing Core</a></li>
+					<li><a href="#" id="menu_core_update"><span class="fa fa-refresh"></span> Update Core</a></li>
+					<li role="separator" class="divider"></li>
+					<li><a href="#" id="menu_core_open_dir"><span class="fa fa-folder-open"></span> Open Cores Directory</a></li>
+					<li role="separator" class="divider"></li>
+					<li><a href="#" id="menu_compiler_update"><span class="fa fa-wrench"></span> Fetch Latest Compiler</a></li>
+				</ul>
+			</div>
 			<select class="electron-only" style="height: 0px; height: 42px; border-radius: 5px;font-weight: bold" id="portserie" onchange="BlocklyDuino.save_com();"></select>
 				
 				<button id="btn_verify" class="btn btn-arduino electron-only" data-toggle="modal" data-target="#message">

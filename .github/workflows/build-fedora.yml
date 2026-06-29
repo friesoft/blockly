@@ -39,11 +39,10 @@ jobs:
             fs.writeFileSync('package.json', JSON.stringify(pkg, null, 2));
           "
         
-      - name: Setup arduino-cli and download cores
-        run: npm run setup-cli
+
 
       - name: Build RPM Package
-        run: npx electron-builder --linux rpm
+        run: npx electron-builder --linux rpm -p always
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
 

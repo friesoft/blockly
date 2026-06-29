@@ -7,10 +7,6 @@ board_manager:
   - https://raw.githubusercontent.com/uStepper/uStepperHardware/master/package_ustepper_index.json
 daemon:
   port: "50051"
-directories:
-  data: ./
-  downloads: ./suppr
-  user: ./userlibs
 logging:
   file: ""
   format: text

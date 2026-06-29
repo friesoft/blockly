@@ -1,7 +1,7 @@
 var arduino_basepath = window.navigator.userAgent.indexOf('Win') !== -1 ? './compilation/arduino' : '../../compilation/arduino'; // Path handled differently since we can't use 'path' module natively. Actually it's better to just leave it as is but without 'path.join'.
 arduino_basepath = './compilation/arduino'; // In electron process.cwd() is project root.
 
-var arduino_ide_cmd = window.navigator.userAgent.indexOf('Win') !== -1 ? 'arduino-cli.exe' : './compilation/arduino/arduino-cli';
+var arduino_ide_cmd = '';
 
 window.addEventListener('load', async function load(event) {
 	var appVersion = await window.ottoAPI.getAppVersion()
@@ -127,6 +127,236 @@ window.addEventListener('load', async function load(event) {
 	$('#btn_factory').on('click', function(){
 		window.ottoAPI.send("factory", "")
 	})
+	var isArduinoCliEnsured = false;
+
+	async function ensureArduinoCli() {
+		if (isArduinoCliEnsured) return;
+		var baseDir = await window.ottoAPI.getArduinoBaseDir();
+		let os = "Linux";
+		let ext = "tar.gz";
+		
+		if (window.navigator.userAgent.indexOf('Win') !== -1) {
+			os = "Windows";
+			ext = "zip";
+			arduino_ide_cmd = baseDir + '\\arduino-cli.exe';
+		} else if (window.navigator.userAgent.indexOf('Mac') !== -1) {
+			os = "macOS";
+			arduino_ide_cmd = baseDir + '/arduino-cli';
+		} else {
+			arduino_ide_cmd = baseDir + '/arduino-cli';
+		}
+		
+		let url = `https://downloads.arduino.cc/arduino-cli/arduino-cli_latest_${os}_64bit.${ext}`;
+		
+		let exists = await window.ottoAPI.exists(arduino_ide_cmd);
+		if (exists) {
+			isArduinoCliEnsured = true;
+			return;
+		}
+
+		await window.ottoAPI.mkdir(baseDir);
+		
+		try {
+			if (os === "Windows") {
+				await window.ottoAPI.exec(`curl -L -o arduino-cli.zip "${url}"`, {cwd: baseDir});
+				await window.ottoAPI.exec(`tar -xf arduino-cli.zip arduino-cli.exe`, {cwd: baseDir});
+				await window.ottoAPI.exec(`del arduino-cli.zip`, {cwd: baseDir});
+			} else {
+				await window.ottoAPI.exec(`curl -fsSL https://raw.githubusercontent.com/arduino/arduino-cli/master/install.sh | BINDIR="${baseDir}" sh`, {cwd: baseDir});
+			}
+			isArduinoCliEnsured = true;
+			$('#message').modal('hide');
+		} catch(e) {
+			messageDiv.style.color = '#ff0000';
+			messageDiv.innerHTML = 'Failed to download arduino-cli: ' + e.toString() + quitDiv;
+			throw e;
+		}
+	}
+
+	async function ensureCoreInstalled(coreName) {
+		return new Promise(async (resolve, reject) => {
+			try {
+				await ensureArduinoCli();
+			} catch(e) {
+				return reject(e);
+			}
+
+			try {
+				var res = await window.ottoAPI.exec(`${arduino_ide_cmd} core list`, {cwd: arduino_basepath});
+				if (res.stdout.includes(coreName.split('@')[0])) {
+					return resolve(); // Already installed
+				}
+			} catch (e) {
+				// Might fail if no cores installed, proceed to install
+			}
+
+			messageDiv.style.color = '#000000';
+			messageDiv.innerHTML = `Downloading ${coreName}... <br><br><progress id="coreProgress" value="0" max="100" style="width:100%"></progress><br><div style="width:100%; overflow-x:auto;"><span id="coreProgressText" style="font-size: 12px; font-family: monospace; white-space: nowrap; display: block;">Initializing...</span></div>` + quitDiv;
+			$('#message').modal('show');
+			
+			// Update index first
+			try {
+				await window.ottoAPI.exec(`${arduino_ide_cmd} --config-file arduino-cli.yaml core update-index`, {cwd: arduino_basepath});
+			} catch(e) {
+				console.log("Failed to update index: " + e);
+			}
+
+			let currentProgress = 0;
+			
+			window.ottoAPI.spawn(
+				arduino_ide_cmd,
+				['--config-file', 'arduino-cli.yaml', 'core', 'install', coreName],
+				{cwd: arduino_basepath},
+				{
+					onStdout: (data) => {
+						let match = data.match(/(\d+)%/);
+						if (match) {
+							currentProgress = parseInt(match[1]);
+							document.getElementById('coreProgress').value = currentProgress;
+						}
+						let lines = data.split('\n').filter(l => l.trim().length > 0);
+						if (lines.length > 0) {
+							let lastLine = lines[lines.length - 1].trim();
+							let el = document.getElementById('coreProgressText');
+							if (el) el.innerText = lastLine;
+						}
+					},
+					onStderr: (data) => {
+						console.log("stderr:", data);
+					},
+					onError: (err) => {
+						reject(err);
+					},
+					onClose: (code) => {
+						if (code === 0) resolve();
+						else reject(new Error(`Exit code ${code}`));
+					}
+				}
+			);
+		});
+	}
+
+	async function updateCoreStatus() {
+		var carte = localStorage.getItem('card') || 'OttoESP';
+		var prog = window.profile && window.profile[carte] ? window.profile[carte].prog : null;
+		if (prog === 'python' || !window.profile || !window.profile[carte].upload_arg) {
+			$('#btn_core_status').hide();
+			return;
+		}
+		$('#btn_core_status').show();
+		$('#icon_core_status').removeClass().addClass('fa fa-spinner fa-spin');
+		$('#btn_core_status').attr('title', 'Checking core status...');
+		
+		var upload_arg = window.profile[carte].upload_arg;
+		var coreName = upload_arg.split(':').slice(0, 2).join(':');
+		
+		try {
+			await ensureArduinoCli();
+			var res = await window.ottoAPI.exec(`${arduino_ide_cmd} core list`, {cwd: arduino_basepath});
+			var dataPath = await window.ottoAPI.getArduinoDataPath();
+			
+			if (res.stdout.includes(coreName.split('@')[0])) {
+				$('#icon_core_status').removeClass().addClass('fa fa-check').css('color', '#009000');
+				var vendor = coreName.split(':')[0];
+				var arch = coreName.split(':')[1];
+				$('#btn_core_status').attr('title', `Core files EXIST and are ready!\nPath: ${dataPath}/packages/${vendor}/hardware/${arch}`);
+			} else {
+				$('#icon_core_status').removeClass().addClass('fa fa-download').css('color', '#ff0000');
+				$('#btn_core_status').attr('title', `Core files MISSING! Click to download.\n(Will install to: ${dataPath})`);
+			}
+		} catch (e) {
+			$('#icon_core_status').removeClass().addClass('fa fa-download').css('color', '#ff0000');
+			$('#btn_core_status').attr('title', 'Core files MISSING! Click to download.');
+		}
+	}
+
+	$('#boards').on('change', function() {
+		setTimeout(updateCoreStatus, 100); // Wait for BlocklyDuino.change_card to update localStorage
+	});
+	
+	setTimeout(updateCoreStatus, 500); // Initial check
+
+	$('#menu_core_download').on('click', async function(e) {
+		e.preventDefault();
+		var carte = localStorage.getItem('card') || 'OttoESP';
+		var upload_arg = window.profile && window.profile[carte] ? window.profile[carte].upload_arg : null;
+		if (!upload_arg) return;
+		var coreName = upload_arg.split(':').slice(0, 2).join(':');
+		try {
+			await ensureCoreInstalled(coreName);
+			updateCoreStatus();
+			$('#message').modal('hide');
+		} catch(err) {
+			messageDiv.style.color = '#ff0000';
+			messageDiv.innerHTML = 'Failed to install core: ' + err.toString() + quitDiv;
+			$('#message').modal('show');
+		}
+	});
+
+	$('#menu_core_update').on('click', async function(e) {
+		e.preventDefault();
+		var carte = localStorage.getItem('card') || 'OttoESP';
+		var upload_arg = window.profile && window.profile[carte] ? window.profile[carte].upload_arg : null;
+		if (!upload_arg) return;
+		var coreName = upload_arg.split(':').slice(0, 2).join(':');
+		
+		messageDiv.style.color = '#000000';
+		messageDiv.innerHTML = `Updating ${coreName}... <br><br><progress id="coreProgress" value="0" max="100" style="width:100%"></progress><br><div style="width:100%; overflow-x:auto;"><span id="coreProgressText" style="font-size: 12px; font-family: monospace; white-space: nowrap; display: block;">Initializing...</span></div>` + quitDiv;
+		$('#message').modal('show');
+		
+		try {
+			await window.ottoAPI.exec(`${arduino_ide_cmd} --config-file arduino-cli.yaml core update-index`, {cwd: arduino_basepath});
+			let currentProgress = 0;
+			await new Promise((resolve, reject) => {
+				window.ottoAPI.spawn(
+					arduino_ide_cmd,
+					['--config-file', 'arduino-cli.yaml', 'core', 'upgrade', coreName],
+					{cwd: arduino_basepath},
+					{
+						onStdout: (data) => {
+							let match = data.match(/(\d+)%/);
+							if (match) {
+								currentProgress = parseInt(match[1]);
+								document.getElementById('coreProgress').value = currentProgress;
+							}
+							let lines = data.split('\n').filter(l => l.trim().length > 0);
+							if (lines.length > 0) {
+								let lastLine = lines[lines.length - 1].trim();
+								let el = document.getElementById('coreProgressText');
+								if (el) el.innerText = lastLine;
+							}
+						},
+						onStderr: (data) => console.log("stderr:", data),
+						onError: reject,
+						onClose: (code) => {
+							if (code === 0) resolve();
+							else reject(new Error(`Exit code ${code}`));
+						}
+					}
+				);
+			});
+			updateCoreStatus();
+			$('#message').modal('hide');
+		} catch(err) {
+			messageDiv.style.color = '#ff0000';
+			messageDiv.innerHTML = 'Failed to update core: ' + err.toString() + quitDiv;
+		}
+	});
+
+	$('#menu_core_open_dir').on('click', async function(e) {
+		e.preventDefault();
+		var dataPath = await window.ottoAPI.getArduinoDataPath();
+		window.ottoAPI.openPath(dataPath);
+	});
+
+	$('#menu_compiler_update').on('click', async function(e) {
+		e.preventDefault();
+		isArduinoCliEnsured = false;
+		await window.ottoAPI.exec(window.navigator.userAgent.indexOf('Win') !== -1 ? `del arduino-cli.exe` : `rm -f arduino-cli`, {cwd: arduino_basepath}).catch(() => {});
+		await ensureArduinoCli();
+		updateCoreStatus();
+	});
+
 	$('#btn_verify').on('click', async function(){
 		if (localStorage.getItem('content') == "off") {
 			var data = editor.getValue()
@@ -159,6 +389,19 @@ window.addEventListener('load', async function load(event) {
 		} else {
             await window.ottoAPI.writeFile(`${arduino_basepath}/sketch/sketch.ino`, data)
             var upload_arg = window.profile[carte].upload_arg
+            var coreName = upload_arg.split(':').slice(0, 2).join(':');
+
+			try {
+				await ensureCoreInstalled(coreName);
+			} catch(e) {
+				messageDiv.style.color = '#ff0000';
+                messageDiv.innerHTML = 'Failed to install core: ' + e.toString() + quitDiv;
+				return;
+			}
+
+            messageDiv.style.color = '#000000';
+		    messageDiv.innerHTML = Blockly.Msg.check + '<i class="fa fa-spinner fa-pulse fa-1_5x fa-fw"></i>';
+
             var cmd = `${arduino_ide_cmd} compile --fqbn ` + upload_arg +' sketch/sketch.ino'
 
             try {
@@ -184,6 +427,7 @@ window.addEventListener('load', async function load(event) {
 		var cpu = profile[carte].cpu
 		var com = portserie.value
 		var upload_arg = window.profile[carte].upload_arg
+		var coreName = upload_arg ? upload_arg.split(':').slice(0, 2).join(':') : null;
 
 		if ( com == "com" ){
 			messageDiv.style.color = '#ff0000'
@@ -191,6 +435,16 @@ window.addEventListener('load', async function load(event) {
 			return
 		}
 		if ( localStorage.getItem('verif') == "false" ){
+			if (prog !== "python" && coreName) {
+				try {
+					await ensureCoreInstalled(coreName);
+				} catch(e) {
+					messageDiv.style.color = '#ff0000';
+					messageDiv.innerHTML = 'Failed to install core: ' + e.toString() + quitDiv;
+					return;
+				}
+			}
+
 			messageDiv.style.color = '#000000'
 			messageDiv.innerHTML = Blockly.Msg.check + '<i class="fa fa-spinner fa-pulse fa-1_5x fa-fw"></i>'
 			await window.ottoAPI.writeFile(`${arduino_basepath}/sketch/sketch.ino`, data)
@@ -206,6 +460,16 @@ window.addEventListener('load', async function load(event) {
                 messageDiv.innerHTML = error.toString() + quitDiv
                 return
             }
+		}
+
+		if (prog !== "python" && coreName) {
+			try {
+				await ensureCoreInstalled(coreName);
+			} catch(e) {
+				messageDiv.style.color = '#ff0000';
+				messageDiv.innerHTML = 'Failed to install core: ' + e.toString() + quitDiv;
+				return;
+			}
 		}
 
 		messageDiv.style.color = '#000000'

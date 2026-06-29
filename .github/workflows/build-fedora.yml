@@ -44,6 +44,8 @@ jobs:
 
       - name: Build RPM Package
         run: npx electron-builder --linux rpm
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
 
       - name: Upload RPM Artifact
         uses: actions/upload-artifact@v7

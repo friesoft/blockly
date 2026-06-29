@@ -6,11 +6,18 @@ compile and upload to multiple options of microcontrollers. Compatible with any
 
 ## [Click here to watch the video to see all the main features](https://youtu.be/chcWxh4Co_c)
 
-## Windows ONLY
+## Differences in this fork
 
-Download the installer from the [releases page](https://github.com/OttoDIY/blockly/releases). After the software is 
-installed in your PC, it is ready to use immediately, you do not need to import Arduino libraries or any additional 
-setup for the boards, you will be ready to upload codes directly to your robot or any other Arduino project via USB cable.
+This fork introduces the following changes:
+- **Linux support**: Includes automated builds for Fedora (RPM) via GitHub Actions, with offline support for `arduino-cli` and bundled Arduino cores.
+- **Updated versions**: Uses modern Node.js and Electron versions, along with an updated `arduino-cli`.
+- **German translation**: Fixes and completes the German translations for block elements and UI components.
+
+## Getting Started
+
+Download the installer for your OS from the [releases page](https://github.com/OttoDIY/blockly/releases). After the software is 
+installed, it is ready to use immediately. You do not need to import Arduino libraries or perform any additional 
+setup for the boards; you will be ready to upload code directly to your robot or any other Arduino project via USB cable.
 
 ### A better solution that works in all other OS, is the [new HP Robots Otto web coding ecosystem](https://hprobots.com/otto-robot/code/) 
 

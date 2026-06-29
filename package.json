@@ -99,7 +99,6 @@
    "icon": "build/file.ico"
   },
   "extraFiles": [
-   "www",
    "compilation/arduino/userlibs",
    "compilation/arduino/sketch",
    "compilation/arduino/arduino-cli.yaml",

@@ -162,8 +162,14 @@ window.addEventListener('load', async function load(event) {
 				await window.ottoAPI.exec(`tar -xf arduino-cli.zip arduino-cli.exe`, {cwd: baseDir});
 				await window.ottoAPI.exec(`del arduino-cli.zip`, {cwd: baseDir});
 			} else {
-				await window.ottoAPI.exec(`curl -fsSL https://raw.githubusercontent.com/arduino/arduino-cli/master/install.sh | BINDIR="${baseDir}" sh`, {cwd: baseDir});
+				await window.ottoAPI.exec(`(curl -fsSL -o arduino-cli.tar.gz "${url}" || wget -qO arduino-cli.tar.gz "${url}")`, {cwd: baseDir});
+				await window.ottoAPI.exec(`tar -xzf arduino-cli.tar.gz arduino-cli`, {cwd: baseDir});
+				await window.ottoAPI.exec(`rm arduino-cli.tar.gz`, {cwd: baseDir});
 			}
+			
+			let downloaded = await window.ottoAPI.exists(arduino_ide_cmd);
+			if (!downloaded) throw new Error("Compiler executable was not generated successfully.");
+			
 			isArduinoCliEnsured = true;
 			$('#message').modal('hide');
 		} catch(e) {

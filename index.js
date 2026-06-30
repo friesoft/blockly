@@ -423,7 +423,7 @@ window.addEventListener('load', async function load(event) {
             messageDiv.style.color = '#000000';
 		    messageDiv.innerHTML = Blockly.Msg.check + '<i class="fa fa-spinner fa-pulse fa-1_5x fa-fw"></i>';
 
-            var cmd = `${arduino_ide_cmd} compile --fqbn ` + upload_arg +` "${user_baseDir}/sketch/sketch.ino"`
+            var cmd = `${arduino_ide_cmd} compile --fqbn ` + upload_arg +` --libraries "${arduino_basepath}/userlibs/libraries" "${user_baseDir}/sketch/sketch.ino"`
 
             try {
                 await window.ottoAPI.exec(cmd, {cwd: arduino_basepath})
@@ -470,7 +470,7 @@ window.addEventListener('load', async function load(event) {
 			messageDiv.innerHTML = Blockly.Msg.check + '<i class="fa fa-spinner fa-pulse fa-1_5x fa-fw"></i>'
 			await window.ottoAPI.writeFile(`${user_baseDir}/sketch/sketch.ino`, data)
 
-			var cmd = `${arduino_ide_cmd} compile --fqbn ` + upload_arg +` "${user_baseDir}/sketch/sketch.ino"`
+			var cmd = `${arduino_ide_cmd} compile --fqbn ` + upload_arg +` --libraries "${arduino_basepath}/userlibs/libraries" "${user_baseDir}/sketch/sketch.ino"`
 
             try {
 			    await window.ottoAPI.exec(cmd , {cwd: `${arduino_basepath}`})
@@ -541,9 +541,9 @@ window.addEventListener('load', async function load(event) {
 			}
 		} else {
 			if (upload_arg.includes("esp32")) {
-			cmd = `${arduino_ide_cmd} upload --port `+portserie.value +' --fqbn ' + upload_arg +` "${user_baseDir}/sketch/sketch.ino"`
+			cmd = `${arduino_ide_cmd} upload --port `+portserie.value +' --fqbn ' + upload_arg +` --libraries "${arduino_basepath}/userlibs/libraries" "${user_baseDir}/sketch/sketch.ino"`
 			} else {
-			cmd = `${arduino_ide_cmd} upload --port `+portserie.value +' --fqbn ' + upload_arg +` "${user_baseDir}/sketch/sketch.ino"`
+			cmd = `${arduino_ide_cmd} upload --port `+portserie.value +' --fqbn ' + upload_arg +` --libraries "${arduino_basepath}/userlibs/libraries" "${user_baseDir}/sketch/sketch.ino"`
 			}
             try {
 		        await window.ottoAPI.exec( cmd, {cwd:`${arduino_basepath}`})

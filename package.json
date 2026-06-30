@@ -90,8 +90,13 @@
     "deb",
     "rpm"
    ],
-   "afterInstall": "build/linux/after-install.sh",
    "icon": "build/logo.png"
+  },
+  "deb": {
+   "afterInstall": "build/linux/after-install.sh"
+  },
+  "rpm": {
+   "afterInstall": "build/linux/after-install.sh"
   },
   "fileAssociations": {
    "ext": "bloc",

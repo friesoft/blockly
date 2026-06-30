@@ -1,9 +1,20 @@
-var arduino_basepath = window.navigator.userAgent.indexOf('Win') !== -1 ? './compilation/arduino' : '../../compilation/arduino'; // Path handled differently since we can't use 'path' module natively. Actually it's better to just leave it as is but without 'path.join'.
-arduino_basepath = './compilation/arduino'; // In electron process.cwd() is project root.
+var arduino_basepath = '';
 
 var arduino_ide_cmd = '';
 
 window.addEventListener('load', async function load(event) {
+	let appPath = await window.ottoAPI.getAppPath();
+	let isPackaged = await window.ottoAPI.isPackaged();
+	if (isPackaged) {
+		if (window.navigator.userAgent.indexOf('Mac') !== -1) {
+			arduino_basepath = appPath + '/../compilation/arduino';
+		} else {
+			arduino_basepath = appPath + '/../../compilation/arduino';
+		}
+	} else {
+		arduino_basepath = appPath + '/compilation/arduino';
+	}
+	
 	var appVersion = await window.ottoAPI.getAppVersion()
 	var quitDiv = '<button type="button" class="close" data-dismiss="modal" aria-label="Close">&#215;</button>'
 	var checkBox = document.getElementById('verifyUpdate')

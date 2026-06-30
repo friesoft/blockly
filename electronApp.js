@@ -13,6 +13,8 @@ process.env.ARDUINO_DIRECTORIES_USER = path.join(baseDir, 'userlibs');
 
 ipcMain.handle('app:getArduinoBaseDir', () => baseDir);
 ipcMain.handle('app:getArduinoDataPath', () => process.env.ARDUINO_DIRECTORIES_DATA);
+ipcMain.handle('app:getAppPath', () => app.getAppPath());
+ipcMain.handle('app:isPackaged', () => app.isPackaged);
 ipcMain.handle('app:openPath', async (event, dirPath) => {
     if (!fs.existsSync(dirPath)) fs.mkdirSync(dirPath, {recursive: true});
     const { shell } = require('electron');

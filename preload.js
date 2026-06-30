@@ -38,6 +38,8 @@ contextBridge.exposeInMainWorld('ottoAPI', {
     
     // Remote / App
     getAppVersion: () => ipcRenderer.invoke('app:getVersion'),
+    getAppPath: () => ipcRenderer.invoke('app:getAppPath'),
+    isPackaged: () => ipcRenderer.invoke('app:isPackaged'),
     getArduinoBaseDir: () => ipcRenderer.invoke('app:getArduinoBaseDir'),
     getArduinoDataPath: () => ipcRenderer.invoke('app:getArduinoDataPath'),
     openPath: (path) => ipcRenderer.invoke('app:openPath', path),

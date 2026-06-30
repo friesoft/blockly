@@ -1,4 +1,5 @@
 var arduino_basepath = '';
+var user_baseDir = '';
 
 var arduino_ide_cmd = '';
 
@@ -14,6 +15,9 @@ window.addEventListener('load', async function load(event) {
 	} else {
 		arduino_basepath = appPath + '/compilation/arduino';
 	}
+	
+	user_baseDir = await window.ottoAPI.getArduinoBaseDir();
+	await window.ottoAPI.mkdir(user_baseDir + '/sketch');
 	
 	var appVersion = await window.ottoAPI.getAppVersion()
 	var quitDiv = '<button type="button" class="close" data-dismiss="modal" aria-label="Close">&#215;</button>'
@@ -404,7 +408,7 @@ window.addEventListener('load', async function load(event) {
                 }
             }
 		} else {
-            await window.ottoAPI.writeFile(`${arduino_basepath}/sketch/sketch.ino`, data)
+            await window.ottoAPI.writeFile(`${user_baseDir}/sketch/sketch.ino`, data)
             var upload_arg = window.profile[carte].upload_arg
             var coreName = upload_arg.split(':').slice(0, 2).join(':');
 
@@ -419,7 +423,7 @@ window.addEventListener('load', async function load(event) {
             messageDiv.style.color = '#000000';
 		    messageDiv.innerHTML = Blockly.Msg.check + '<i class="fa fa-spinner fa-pulse fa-1_5x fa-fw"></i>';
 
-            var cmd = `${arduino_ide_cmd} compile --fqbn ` + upload_arg +' sketch/sketch.ino'
+            var cmd = `${arduino_ide_cmd} compile --fqbn ` + upload_arg +` "${user_baseDir}/sketch/sketch.ino"`
 
             try {
                 await window.ottoAPI.exec(cmd, {cwd: arduino_basepath})
@@ -464,9 +468,9 @@ window.addEventListener('load', async function load(event) {
 
 			messageDiv.style.color = '#000000'
 			messageDiv.innerHTML = Blockly.Msg.check + '<i class="fa fa-spinner fa-pulse fa-1_5x fa-fw"></i>'
-			await window.ottoAPI.writeFile(`${arduino_basepath}/sketch/sketch.ino`, data)
+			await window.ottoAPI.writeFile(`${user_baseDir}/sketch/sketch.ino`, data)
 
-			var cmd = `${arduino_ide_cmd} compile --fqbn ` + upload_arg +' sketch/sketch.ino'
+			var cmd = `${arduino_ide_cmd} compile --fqbn ` + upload_arg +` "${user_baseDir}/sketch/sketch.ino"`
 
             try {
 			    await window.ottoAPI.exec(cmd , {cwd: `${arduino_basepath}`})
@@ -536,7 +540,11 @@ window.addEventListener('load', async function load(event) {
                 }
 			}
 		} else {
-			cmd = `${arduino_ide_cmd} upload --port `+portserie.value +' --fqbn ' + upload_arg +' sketch/sketch.ino'
+			if (upload_arg.includes("esp32")) {
+			cmd = `${arduino_ide_cmd} upload --port `+portserie.value +' --fqbn ' + upload_arg +` "${user_baseDir}/sketch/sketch.ino"`
+			} else {
+			cmd = `${arduino_ide_cmd} upload --port `+portserie.value +' --fqbn ' + upload_arg +` "${user_baseDir}/sketch/sketch.ino"`
+			}
             try {
 		        await window.ottoAPI.exec( cmd, {cwd:`${arduino_basepath}`})
 				uploadOK()

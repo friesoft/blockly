@@ -47,6 +47,9 @@ window.addEventListener('load', function load(event) {
                 })
             } catch(err) {
                 moniteur.innerHTML += '--- ERROR OPENING SERIAL PORT: '+err+' ---<br>'
+                if (err && (err.toString().includes('EACCES') || err.toString().includes('Permission denied'))) {
+                    window.alert("Permission Denied!\n\nTo access the USB port on Linux, open your terminal, run the following command, and then log out / log back in:\n\nsudo usermod -a -G dialout $USER");
+                }
             }
 		}
 	}

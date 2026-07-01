@@ -541,9 +541,9 @@ window.addEventListener('load', async function load(event) {
 			}
 		} else {
 			if (upload_arg.includes("esp32")) {
-			cmd = `${arduino_ide_cmd} upload --port `+portserie.value +' --fqbn ' + upload_arg +` --libraries "${arduino_basepath}/userlibs/libraries" "${user_baseDir}/sketch/sketch.ino"`
+			cmd = `${arduino_ide_cmd} upload --port `+portserie.value +' --fqbn ' + upload_arg +` "${user_baseDir}/sketch/sketch.ino"`
 			} else {
-			cmd = `${arduino_ide_cmd} upload --port `+portserie.value +' --fqbn ' + upload_arg +` --libraries "${arduino_basepath}/userlibs/libraries" "${user_baseDir}/sketch/sketch.ino"`
+			cmd = `${arduino_ide_cmd} upload --port `+portserie.value +' --fqbn ' + upload_arg +` "${user_baseDir}/sketch/sketch.ino"`
 			}
             try {
 		        await window.ottoAPI.exec( cmd, {cwd:`${arduino_basepath}`})

@@ -90,7 +90,7 @@
     "deb",
     "rpm"
    ],
-   "icon": "build/logo.png"
+   "icon": "build/icons"
   },
   "deb": {
    "afterInstall": "build/linux/after-install.sh"
